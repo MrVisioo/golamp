@@ -1,13 +1,25 @@
 package publishlamp
 
 import (
-	"github.com/eclipse/paho.mqtt.golang"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"os/exec"
 )
 
-func PublishPaho(host string, bulb_id string, message string) {
+func PublishPaho(host string, bulb_ids []string, message string) {
+	clientOpts := MQTT.NewClientOptions().AddBroker(host)
+	client := MQTT.NewClient(clientOpts)
+	c_token := client.Connect()
+	if c_token.Wait() && c_token.Error() != nil {
+		log.Fatal(c_token.Error())
+	}
 
+	for _, value := range bulb_ids {
+		p_token := client.Publish(value, 0, false, message)
+		if p_token.Wait() && p_token.Error() != nil {
+			log.Fatal(p_token.Error())
+		}
+	}
 }
 
 func PublishCmd(host string, bulb_id string, message string) {
