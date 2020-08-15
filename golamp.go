@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/mrvisioo/golamp/publishlamp"
+	lamp "github.com/mrvisioo/golamp/publishlamp"
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 )
 
 type Bulbs struct {
@@ -33,15 +34,30 @@ func main() {
 
 	host := "tcp://cloud.qh-tek.com:1883"
 
-	off := "\xfa\x24\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x24\xfb"
-	on := "\xfa\x23\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x23\xfb"
-
 	if len(os.Args) > 1 {
-		arg := os.Args[1]
-		if arg == "on" {
-			publishlamp.PublishPaho(host, bulbs, on)
-		} else if arg == "off" {
-			publishlamp.PublishPaho(host, bulbs, off)
+		switch arg := os.Args[1]; arg {
+		case "on":
+			lamp.Publish(host, bulbs, lamp.On())
+		case "off":
+			lamp.Publish(host, bulbs, lamp.Off())
+		case "dim":
+			{
+				if len(os.Args) > 2 {
+					bright, _ := strconv.ParseInt(os.Args[2], 10, 16)
+					if bright < 0 {
+						if bright > -100 {
+							bright = 100 + bright
+						} else {
+							bright = 1
+						}
+					}
+					lamp.Publish(host, bulbs, lamp.Dim(byte(bright)))
+				} else {
+					lamp.Publish(host, bulbs, lamp.Dim(100))
+				}
+			}
+		default:
+			log.Fatal("Not enough arguments")
 		}
 	} else {
 		log.Fatal("Not enough arguments")
