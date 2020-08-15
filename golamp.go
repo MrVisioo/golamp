@@ -42,14 +42,12 @@ func main() {
 
 	bulbs := ShareSecrets()
 
-	host := "tcp://cloud.qh-tek.com:1883"
-
 	if len(os.Args) > 1 {
 		switch arg := os.Args[1]; arg {
 		case "on":
-			lamp.Publish(host, bulbs, lamp.On())
+			lamp.Publish(lamp.QhtekHost(), bulbs, lamp.On())
 		case "off":
-			lamp.Publish(host, bulbs, lamp.Off())
+			lamp.Publish(lamp.QhtekHost(), bulbs, lamp.Off())
 		case "dim":
 			{
 				if len(os.Args) > 2 {
@@ -61,9 +59,9 @@ func main() {
 							bright = 1
 						}
 					}
-					lamp.Publish(host, bulbs, lamp.Dim(byte(bright)))
+					lamp.Publish(lamp.QhtekHost(), bulbs, lamp.Dim(byte(bright)))
 				} else {
-					lamp.Publish(host, bulbs, lamp.Dim(100))
+					lamp.Publish(lamp.QhtekHost(), bulbs, lamp.Dim(100))
 				}
 			}
 		case "help":

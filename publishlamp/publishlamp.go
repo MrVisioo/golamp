@@ -6,6 +6,10 @@ import (
 	"os/exec"
 )
 
+func QhtekHost() string {
+	return "tcp://cloud.qh-tek.com:1883"
+}
+
 //output byte values in Dim(), On(), Off() are captured from the official smartphone app
 func Dim(value byte) []byte {
 	// values outside 1 to 100 range softlock lightbulbs
