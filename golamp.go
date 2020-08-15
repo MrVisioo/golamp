@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	lamp "github.com/mrvisioo/golamp/publishlamp"
 	"io/ioutil"
 	"log"
@@ -26,6 +27,15 @@ func ShareSecrets() []string {
 	json.Unmarshal(byteValue, &bulbs)
 
 	return bulbs.Bulbs
+}
+
+func usage() {
+	fmt.Fprintf(os.Stderr, "usage: %s [command] [value] \n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "commands:\n")
+	fmt.Fprintf(os.Stderr, "  on	Turn on\n")
+	fmt.Fprintf(os.Stderr, "  off	Turn off\n")
+	fmt.Fprintf(os.Stderr, "  dim [value]	Dim TO value. Default value is 100. Negative values subtract from 100 (-80 is 20).\n")
+	os.Exit()
 }
 
 func main() {
@@ -57,9 +67,9 @@ func main() {
 				}
 			}
 		default:
-			log.Fatal("Not enough arguments")
+			usage()
 		}
 	} else {
-		log.Fatal("Not enough arguments")
+		usage()
 	}
 }
