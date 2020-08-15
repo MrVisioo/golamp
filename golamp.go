@@ -29,13 +29,13 @@ func ShareSecrets() []string {
 	return bulbs.Bulbs
 }
 
-func usage() {
+func usage(err int) {
 	fmt.Fprintf(os.Stderr, "usage: %s [command] [value] \n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "commands:\n")
-	fmt.Fprintf(os.Stderr, "  on	Turn on\n")
-	fmt.Fprintf(os.Stderr, "  off	Turn off\n")
-	fmt.Fprintf(os.Stderr, "  dim [value]	Dim TO value. Default value is 100. Negative values subtract from 100 (-80 is 20).\n")
-	os.Exit()
+	fmt.Fprintf(os.Stderr, "  on         	Turn on\n")
+	fmt.Fprintf(os.Stderr, "  off        	Turn off\n")
+	fmt.Fprintf(os.Stderr, "  dim [value]	Dim TO value. Default value is 100. Negative values subtract from 100 (-80 is 20). Turns on lightbulb if it's off\n")
+	os.Exit(err)
 }
 
 func main() {
@@ -66,10 +66,12 @@ func main() {
 					lamp.Publish(host, bulbs, lamp.Dim(100))
 				}
 			}
+		case "help":
+			usage(0)
 		default:
-			usage()
+			usage(1)
 		}
 	} else {
-		usage()
+		usage(2)
 	}
 }
