@@ -1,10 +1,32 @@
 package publishlamp
 
 import (
+	"encoding/json"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 )
+
+type Bulbs struct {
+	IDs []string `json:"Bulbs"`
+}
+
+func ShareSecrets(jsonname string) Bulbs {
+	jsonFile, err := os.Open(jsonname)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	var bulbs Bulbs
+
+	json.Unmarshal(byteValue, &bulbs)
+
+	return bulbs
+}
 
 func QhtekHost() string {
 	return "tcp://cloud.qh-tek.com:1883"

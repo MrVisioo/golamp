@@ -1,33 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	lamp "github.com/mrvisioo/golamp/publishlamp"
-	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
 )
-
-type Bulbs struct {
-	Bulbs []string `json:"Bulbs"`
-}
-
-func ShareSecrets() []string {
-	jsonFile, err := os.Open("secret.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	var bulbs Bulbs
-
-	json.Unmarshal(byteValue, &bulbs)
-
-	return bulbs.Bulbs
-}
 
 func usage(err int) {
 	fmt.Fprintf(os.Stderr, "usage: %s [command] [value] \n", os.Args[0])
@@ -40,14 +18,14 @@ func usage(err int) {
 
 func main() {
 
-	bulbs := ShareSecrets()
+	bulbs := lamp.ShareSecrets("secret.json")
 
 	if len(os.Args) > 1 {
 		switch arg := os.Args[1]; arg {
 		case "on":
-			lamp.Publish(lamp.QhtekHost(), bulbs, lamp.On())
+			lamp.Publish(lamp.QhtekHost(), bulbs.IDs, lamp.On())
 		case "off":
-			lamp.Publish(lamp.QhtekHost(), bulbs, lamp.Off())
+			lamp.Publish(lamp.QhtekHost(), bulbs.IDs, lamp.Off())
 		case "dim":
 			{
 				if len(os.Args) > 2 {
@@ -59,9 +37,9 @@ func main() {
 							bright = 1
 						}
 					}
-					lamp.Publish(lamp.QhtekHost(), bulbs, lamp.Dim(byte(bright)))
+					lamp.Publish(lamp.QhtekHost(), bulbs.IDs, lamp.Dim(byte(bright)))
 				} else {
-					lamp.Publish(lamp.QhtekHost(), bulbs, lamp.Dim(100))
+					lamp.Publish(lamp.QhtekHost(), bulbs.IDs, lamp.Dim(100))
 				}
 			}
 		case "help":
