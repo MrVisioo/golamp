@@ -32,6 +32,25 @@ func QhtekHost() string {
 }
 
 //output byte values in Dim(), On(), Off() are captured from the official smartphone app
+var baseoutput = []byte{
+	0xfa,
+	0x23,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x23,
+	0xfb,
+}
+
 func Dim(value byte) []byte {
 	// values outside 1 to 100 range softlock lightbulbs
 	if value > 100 {
@@ -41,70 +60,26 @@ func Dim(value byte) []byte {
 		value = 1
 	}
 
-	output := []byte{
-		0x21,
-		0x01,
-		value,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		value ^ 1, // Value XOR 1 (checksum?) is found in this place in the app
-		0x3a,
-	}
+	output := baseoutput
+	output[0] = 0x21
+	output[1] = 0x01
+	output[2] = value
+	output[14] = value ^ 1
+	output[15] = 0x3a
 
 	return output
 }
 
 func On() []byte {
-	output := []byte{
-		0xfa,
-		0x23,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x23,
-		0xfb,
-	}
+	output := baseoutput
 
 	return output
 }
 
 func Off() []byte {
-	output := []byte{
-		0xfa,
-		0x24,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x00,
-		0x24,
-		0xfb,
-	}
+	output := baseoutput
+	output[1] = 0x24
+	output[14] = 0x24
 
 	return output
 }
